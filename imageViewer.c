@@ -12,7 +12,7 @@
 #include "define.h"
 #include "bitpack.h"
 
-int main(){
+int main(int argc, char **argv){
     FILE *fp = fopen("dots.bmp","rb");
 
 	fseek(fp, 0, SEEK_END);
