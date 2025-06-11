@@ -12,6 +12,17 @@
 #include "define.h"
 #include "bitpack.h"
 
+void displayLoop(uint32_t *pixelData, SDL_Window *window, SDL_Renderer *renderer);
+
+uint16_t fileSig;
+uint32_t fileSize;
+uint32_t dataOffset;
+uint32_t infoHeaderSize;
+uint16_t bitsPerPixel;
+uint32_t compression;
+uint32_t width;
+uint32_t height;
+
 int main(int argc, char **argv){
     FILE *fp = fopen("dots.bmp","rb");
 
@@ -24,9 +35,9 @@ int main(int argc, char **argv){
     fread(raw, 1, size, fp);
 
     //Header section
-    uint16_t fileSig = bitpack16(raw, HEADERSIGOFFSET);
-    uint32_t fileSize = size;
-    uint32_t dataOffset = bitpack32(raw, DATAOFFSET);
+    fileSig = bitpack16(raw, HEADERSIGOFFSET);
+    fileSize = size;
+    dataOffset = bitpack32(raw, DATAOFFSET);
 
     if(fileSig != BMPSIG){
         printf("This file does not contain a valid BMP sig\n");
@@ -34,22 +45,37 @@ int main(int argc, char **argv){
     }
 
     //infoHeader section
-    uint32_t infoHeaderSize = bitpack32(raw, SIZEOFFSET);
+    infoHeaderSize = bitpack32(raw, SIZEOFFSET);
 
     if(infoHeaderSize != BITMAPINFOHEADERSIZE){
         printf("infoHeader size of %d not supported\n", infoHeaderSize);
     }
 
+    bitsPerPixel = bitpack16(raw, BITSPERPIXELOFFSET);
+    compression = bitpack32(raw, COMPRESSIONOFFSET);
 
+    printf("%s : %d", "Compression type\n", compression);
+    fflush(stdout);
     /* Initialize SDL renderer and display  */
 
-    uint32_t width = bitpack32(raw, WIDTHOFFSET);
-    uint32_t height = bitpack32(raw, HEIGHTOFFSET);
+    width = bitpack32(raw, WIDTHOFFSET);
+    height = bitpack32(raw, HEIGHTOFFSET);
 
     SDL_Window *window = initDisplay(width, height);
     SDL_Renderer *renderer = initRender(window);
     uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
 
+    displayLoop(pixelData, window, renderer);
+
+    /* End cleanup: print debug, free memory */
+
+    printf("Window Width: %d\n", width);
+    fflush(stdout);
+    free(pixelData);
+    return 0;
+}
+
+void displayLoop(uint32_t *pixelData, SDL_Window *window, SDL_Renderer *renderer){
     for(int i = 0; i < width * height; i++) {
         pixelData[i] = 0x0000FFFF;
     }
@@ -66,11 +92,4 @@ int main(int argc, char **argv){
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
-
-    /* End cleanup: print debug, free memory */
-
-    printf("%d\n", width);
-
-    free(pixelData);
-    return 0;
 }
