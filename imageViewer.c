@@ -22,6 +22,7 @@ uint16_t bitsPerPixel;
 uint32_t compression;
 uint32_t width;
 uint32_t height;
+uint32_t imageSize;
 
 int main(int argc, char **argv){
     FILE *fp = fopen("dots.bmp","rb");
@@ -34,33 +35,37 @@ int main(int argc, char **argv){
 
     fread(raw, 1, size, fp);
 
-    //Header section
+    //Header initializations
     fileSig = bitpack16(raw, HEADERSIGOFFSET);
     fileSize = size;
     dataOffset = bitpack32(raw, DATAOFFSET);
+    infoHeaderSize = bitpack32(raw, SIZEOFFSET);
+    bitsPerPixel = bitpack16(raw, BITSPERPIXELOFFSET);
+    compression = bitpack32(raw, COMPRESSIONOFFSET);
+    width = bitpack32(raw, WIDTHOFFSET);
+    height = bitpack32(raw, HEIGHTOFFSET);
+    imageSize = bitpack32(raw, IMAGESIZEOFFSET);
 
+
+    //header value validity verification
     if(fileSig != BMPSIG){
         printf("This file does not contain a valid BMP sig\n");
         return 1;
     }
 
-    //infoHeader section
-    infoHeaderSize = bitpack32(raw, SIZEOFFSET);
-
     if(infoHeaderSize != BITMAPINFOHEADERSIZE){
         printf("infoHeader size of %d not supported\n", infoHeaderSize);
     }
 
-    bitsPerPixel = bitpack16(raw, BITSPERPIXELOFFSET);
-    compression = bitpack32(raw, COMPRESSIONOFFSET);
-
     printf("%s: %d\n", "Compression type", compression);
     fflush(stdout);
+    if(compression){
+        printf("Compressed images are currently unsupported\n");
+        return -1;
+    }
+
+
     /* Initialize SDL renderer and display  */
-
-    width = bitpack32(raw, WIDTHOFFSET);
-    height = bitpack32(raw, HEIGHTOFFSET);
-
     SDL_Window *window = initDisplay(width, height);
     SDL_Renderer *renderer = initRender(window);
     uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
