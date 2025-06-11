@@ -40,6 +40,9 @@ int main(int argc, char **argv){
         printf("infoHeader size of %d not supported\n", infoHeaderSize);
     }
 
+
+    /* Initialize SDL renderer and display  */
+
     uint32_t width = bitpack32(raw, WIDTHOFFSET);
     uint32_t height = bitpack32(raw, HEIGHTOFFSET);
 
@@ -62,6 +65,9 @@ int main(int argc, char **argv){
         }
         SDL_RenderPresent(renderer);
     }
+
+    /* End cleanup: print debug, free memory */
+
     printf("%d\n", width);
 
     free(pixelData);
