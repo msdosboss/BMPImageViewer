@@ -56,13 +56,14 @@ int main(int argc, char **argv){
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     SDL_UpdateTexture(texture, NULL, pixelData, width * sizeof(uint32_t));
 
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_Event event;
     while(1){
         SDL_PollEvent(&event);
         if(event.type == SDL_QUIT){
             break;
         }
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
 
