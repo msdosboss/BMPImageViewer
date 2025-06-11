@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "display.h"
+#include "define.h"
+#include "bitpack.h"
+
 int main(){
     FILE *fp = fopen("dots.bmp","rb");
 
@@ -15,14 +19,14 @@ int main(){
 	long size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	unsigned char *raw = malloc(sizeof(unsigned char) * size);
+	uint8_t *raw = malloc(sizeof(uint8_t) * size);
 
     fread(raw, 1, size, fp);
 
     //Header section
-    uint16_t fileSig = raw[0x0] | raw[0x1] << 8;
+    uint16_t fileSig = bitpack16(raw, HEADERSIGOFFSET);
     uint32_t fileSize = size;
-    uint32_t dataOffset = raw[0x10] | raw[0x11] << 8 | raw[0x12] << 16 | raw[0x13] << 24;
+    uint32_t dataOffset = bitpack32(raw, DATAOFFSET);
 
     if(fileSig != BMPSIG){
         printf("This file does not contain a valid BMP sig\n");
@@ -30,11 +34,19 @@ int main(){
     }
 
     //infoHeader section
-    uint32_t infoHeaderSize = raw[0xe] | raw[0xf] << 8 | raw[0x10] << 16 | raw[0x11] << 24;
+    uint32_t infoHeaderSize = bitpack32(raw, SIZEOFFSET);
 
     if(infoHeaderSize != BITMAPINFOHEADERSIZE){
         printf("infoHeader size of %d not supported\n", infoHeaderSize);
     }
+
+    uint32_t width = bitpack32(raw, WIDTHOFFSET);
+    uint32_t height = bitpack32(raw, HEIGHTOFFSET);
+
+
+    SDL_Window *window = initDisplay(width, height);
+
+    printf("%d\n", width);
 
     return 0;
 }
