@@ -23,6 +23,7 @@ uint32_t compression;
 uint32_t width;
 uint32_t height;
 uint32_t imageSize;
+uint32_t amountColorsUsed;
 
 int main(int argc, char **argv){
     FILE *fp = fopen("dots.bmp","rb");
@@ -69,6 +70,36 @@ int main(int argc, char **argv){
     SDL_Window *window = initDisplay(width, height);
     SDL_Renderer *renderer = initRender(window);
     uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
+
+    amountColorsUsed = bitpack32(raw, COLORUSEDOFFSET);
+
+    uint8_t *data = &raw[dataOffset];
+
+    switch(bitsPerPixel){
+        case 1:{
+            uint32_t colorTable[2];
+            colorTable[1] = raw[COLORTABLEOFFSET];
+            colorTable[0] = raw[COLORTABLEOFFSET + 1];
+
+            for(int i = 0; i < imageSize; i++){
+                for(int j = 0; j < 8; j++){
+                    pixelData[i * 8 + j] = colorTable[data[i] & (0b1 << j)];
+                }
+            }
+            break;
+        }
+        case 4:
+            break;
+
+        case 8:
+            break;
+
+        case 16:
+            break;
+
+        case 24:
+            break;
+    }
 
     displayLoop(pixelData, window, renderer);
 
