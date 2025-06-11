@@ -43,9 +43,25 @@ int main(int argc, char **argv){
     uint32_t width = bitpack32(raw, WIDTHOFFSET);
     uint32_t height = bitpack32(raw, HEIGHTOFFSET);
 
-
     SDL_Window *window = initDisplay(width, height);
+    SDL_Renderer *renderer = initRender(window);
+    uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
+    
+    for(int i = 0; i < width * height; i++) {
+        pixelData[i] = 0x0000FFFF;
+    }
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+    SDL_UpdateTexture(texture, NULL, pixelData, width * sizeof(uint32_t));
 
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_Event event;
+    while(1){
+        SDL_PollEvent(&event);
+        if(event.type == SDL_QUIT){
+            break;
+        }
+        SDL_RenderPresent(renderer);
+    }
     printf("%d\n", width);
 
     return 0;
