@@ -54,7 +54,7 @@ int main(int argc, char **argv){
     bitsPerPixel = bitpack16(raw, BITSPERPIXELOFFSET);
     compression = bitpack32(raw, COMPRESSIONOFFSET);
 
-    printf("%s : %d", "Compression type\n", compression);
+    printf("%s: %d\n", "Compression type", compression);
     fflush(stdout);
     /* Initialize SDL renderer and display  */
 
