@@ -8,7 +8,7 @@ SDL_Window *initDisplay(int width, int height){
 		return 0;
 	}
 	/* Create a window */
-	SDL_Window* wind = SDL_CreateWindow("Hello Platformer!",
+	SDL_Window* wind = SDL_CreateWindow("OrcaCorp ImageViewer",
 				      SDL_WINDOWPOS_CENTERED,
 				      SDL_WINDOWPOS_CENTERED,
 				      width, height, 0);
