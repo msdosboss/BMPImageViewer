@@ -49,7 +49,7 @@ int main(int argc, char **argv){
     SDL_Window *window = initDisplay(width, height);
     SDL_Renderer *renderer = initRender(window);
     uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
-    
+
     for(int i = 0; i < width * height; i++) {
         pixelData[i] = 0x0000FFFF;
     }
