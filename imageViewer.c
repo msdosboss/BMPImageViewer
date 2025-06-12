@@ -75,6 +75,8 @@ int main(int argc, char **argv){
 
     uint8_t *data = &raw[dataOffset];
 
+    printf("bitsPerPixel %d\n", bitsPerPixel);
+
     switch(bitsPerPixel){
         case 1:{
             printf("case 1 reached\n");
@@ -85,7 +87,7 @@ int main(int argc, char **argv){
 
             for(int i = 0; i < imageSize; i++){
                 for(int j = 0; j < 8; j++){
-                    pixelData[i * 8 + j] = colorTable[data[i] & (0b1 << j)];
+                    pixelData[i * 8 + j] = colorTable[(data[i] >> (7 - j)) & 0b1];
                 }
             }
             break;
