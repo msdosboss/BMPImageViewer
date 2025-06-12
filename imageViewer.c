@@ -82,8 +82,10 @@ int main(int argc, char **argv){
             printf("case 1 reached\n");
             uint32_t colorTable[2];
             /*there will have to be a custom bit packer for the colorTable since the data is stored diffently*/
-            colorTable[1] = bitpack32(raw, COLORTABLEOFFSET);
-            colorTable[0] = bitpack32(raw, COLORTABLEOFFSET + sizeof(uint32_t));
+            colorTable[1] = colorTableBitpack(raw, COLORTABLEOFFSET);
+            colorTable[0] = colorTableBitpack(raw, COLORTABLEOFFSET + sizeof(uint32_t));
+
+            printf("colorTable[0]: %x\ncolorTable[1]: %x\n", colorTable[0], colorTable[1]);
 
             for(int i = 0; i < imageSize; i++){
                 for(int j = 0; j < 8; j++){
