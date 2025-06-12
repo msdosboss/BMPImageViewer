@@ -79,6 +79,7 @@ int main(int argc, char **argv){
         case 1:{
             printf("case 1 reached\n");
             uint32_t colorTable[2];
+            /*there will have to be a custom bit packer for the colorTable since the data is stored diffently*/
             colorTable[1] = bitpack32(raw, COLORTABLEOFFSET);
             colorTable[0] = bitpack32(raw, COLORTABLEOFFSET + sizeof(uint32_t));
 
