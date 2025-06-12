@@ -79,8 +79,8 @@ int main(int argc, char **argv){
         case 1:{
             printf("case 1 reached\n");
             uint32_t colorTable[2];
-            colorTable[1] = raw[COLORTABLEOFFSET];
-            colorTable[0] = raw[COLORTABLEOFFSET + 1];
+            colorTable[1] = bitpack32(raw, COLORTABLEOFFSET);
+            colorTable[0] = bitpack32(raw, COLORTABLEOFFSET + sizeof(uint32_t));
 
             for(int i = 0; i < imageSize; i++){
                 for(int j = 0; j < 8; j++){
