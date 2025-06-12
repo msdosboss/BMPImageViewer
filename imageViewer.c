@@ -26,7 +26,7 @@ uint32_t imageSize;
 uint32_t amountColorsUsed;
 
 int main(int argc, char **argv){
-    FILE *fp = fopen("dots.bmp","rb");
+    FILE *fp = fopen("BW_1015.bmp","rb");
 
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
@@ -77,6 +77,7 @@ int main(int argc, char **argv){
 
     switch(bitsPerPixel){
         case 1:{
+            printf("case 1 reached\n");
             uint32_t colorTable[2];
             colorTable[1] = raw[COLORTABLEOFFSET];
             colorTable[0] = raw[COLORTABLEOFFSET + 1];
@@ -112,9 +113,6 @@ int main(int argc, char **argv){
 }
 
 void displayLoop(uint32_t *pixelData, SDL_Window *window, SDL_Renderer *renderer){
-    for(int i = 0; i < width * height; i++) {
-        pixelData[i] = 0x0000FFFF;
-    }
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     SDL_UpdateTexture(texture, NULL, pixelData, width * sizeof(uint32_t));
 
