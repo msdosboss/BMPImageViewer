@@ -69,13 +69,21 @@ int main(int argc, char **argv){
     /* Initialize SDL renderer and display  */
     SDL_Window *window = initDisplay(width, height);
     SDL_Renderer *renderer = initRender(window);
-    uint32_t *pixelData = malloc(sizeof(uint32_t) * width * sizeof(uint32_t) * height);
+    uint32_t *pixelData = malloc(width * sizeof(uint32_t) * height);
 
     amountColorsUsed = bitpack32(raw, COLORUSEDOFFSET);
 
     uint8_t *data = &raw[dataOffset];
 
     printf("bitsPerPixel %d\n", bitsPerPixel);
+    printf("imageSize %d\n", imageSize);
+    printf("imageHeight %d\n", height);
+    printf("width * hieght / 8 = %d\n", width * height / 8);
+
+    int rowSize = width * bitsPerPixel / 8;
+    //got this formula for paddedRowSize from wikipedia
+    int paddedRowSize = (bitsPerPixel * width + 31) / 32 * 4;
+    printf("rowSize %d\n", rowSize);
 
     switch(bitsPerPixel){
         case 1:{
@@ -87,10 +95,15 @@ int main(int argc, char **argv){
 
             printf("colorTable[0]: %x\ncolorTable[1]: %x\n", colorTable[0], colorTable[1]);
 
+            int ii = 0;
             for(int i = 0; i < imageSize; i++){
-                for(int j = 0; j < 8; j++){
-                    pixelData[i * 8 + j] = colorTable[(data[i] >> (7 - j)) & 0b1];
+                if(i % paddedRowSize >= rowSize){
+                    continue;
                 }
+                for(int j = 0; j < 8; j++){
+                    pixelData[ii * 8 + j] = colorTable[(data[i] >> (7 - j)) & 0b1];
+                }
+                ii++;
             }
             break;
         }
