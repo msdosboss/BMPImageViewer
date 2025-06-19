@@ -27,7 +27,14 @@ uint32_t imageSize;
 uint32_t amountColorsUsed;
 
 int main(int argc, char **argv){
-    FILE *fp = fopen("4bit.bmp","rb");
+    FILE *fp;
+    if(argc > 1) {
+        fp = fopen(argv[1],"rb");
+    }
+    else {
+        fp = fopen("4bit.bmp","rb");
+    }
+    if(fp == NULL) return -69;
 
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
@@ -143,6 +150,7 @@ int main(int argc, char **argv){
             break;
 
         case 16:
+            
             break;
 
         case 24:
