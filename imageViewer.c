@@ -27,7 +27,7 @@ uint32_t imageSize;
 uint32_t amountColorsUsed;
 
 int main(int argc, char **argv){
-    FILE *fp = fopen("BW_1015.bmp","rb");
+    FILE *fp = fopen("4bit.bmp","rb");
 
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
@@ -76,10 +76,12 @@ int main(int argc, char **argv){
 
     uint8_t *data = &raw[dataOffset];
 
+    #if defined DEBUG
     printf("bitsPerPixel %d\n", bitsPerPixel);
     printf("imageSize %d\n", imageSize);
     printf("imageHeight %d\n", height);
-    printf("width * hieght / 8 = %d\n", width * height / 8);
+    printf("width * height / 8 = %d\n", width * height / 8);
+    #endif
 
     int rowSize = width * bitsPerPixel / 8; //unit:bytes
     //got this formula for paddedRowSize from wikipedia
@@ -121,12 +123,23 @@ int main(int argc, char **argv){
                     }
                     pixelData[hIndex * width + wIndex] = 
                     colorTable[(data[((height - hIndex) * (paddedRowSize * pixelsPerByte) + wIndex) / pixelsPerByte] >> ((wIndex % pixelsPerByte) * 4)) & 0b1111];
-                    ii++;
                 }
             }            
             break;
 
         case 8:
+            for(int colorTableIndex = 0; colorTableIndex < colorTableSize; colorTableIndex++){
+                colorTable[colorTableIndex] = colorTableBitpack(raw, COLORTABLEOFFSET + colorTableIndex * sizeof(uint32_t));
+            }
+            for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
+                for(int wIndex = 0; wIndex < paddedRowSize * pixelsPerByte; wIndex++){
+                    if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
+                        continue;
+                    }
+                    pixelData[hIndex * width + wIndex] = 
+                    colorTable[data[((height - hIndex) * (paddedRowSize * pixelsPerByte) + wIndex)]];
+                }
+            }
             break;
 
         case 16:
