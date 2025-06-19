@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 
 #include "display.h"
 #include "define.h"
@@ -20,8 +21,8 @@ uint32_t dataOffset;
 uint32_t infoHeaderSize;
 uint16_t bitsPerPixel;
 uint32_t compression;
-uint32_t width;
-uint32_t height;
+uint32_t width; //the number of pixels in a row
+uint32_t height; //the number of pixels in a column
 uint32_t imageSize;
 uint32_t amountColorsUsed;
 
@@ -80,34 +81,49 @@ int main(int argc, char **argv){
     printf("imageHeight %d\n", height);
     printf("width * hieght / 8 = %d\n", width * height / 8);
 
-    int rowSize = width * bitsPerPixel / 8;
+    int rowSize = width * bitsPerPixel / 8; //unit:bytes
     //got this formula for paddedRowSize from wikipedia
-    int paddedRowSize = (bitsPerPixel * width + 31) / 32 * 4;
+    int paddedRowSize = (bitsPerPixel * width + 31) / 32 * 4; //unit:bytes
     printf("rowSize %d\n", rowSize);
+
+    int pixelsPerByte = 8 / bitsPerPixel;
+    int colorTableSize = pow(2.0f, (double)bitsPerPixel); 
+
+    uint32_t colorTable[colorTableSize];
 
     switch(bitsPerPixel){
         case 1:{
-            printf("case 1 reached\n");
-            uint32_t colorTable[2];
             /*there will have to be a custom bit packer for the colorTable since the data is stored diffently*/
             colorTable[0] = colorTableBitpack(raw, COLORTABLEOFFSET);
             colorTable[1] = colorTableBitpack(raw, COLORTABLEOFFSET + sizeof(uint32_t));
 
             printf("colorTable[0]: %x\ncolorTable[1]: %x\n", colorTable[0], colorTable[1]);
-
-            int ii = 0;
-            for(int i = 0; i < imageSize; i++){
-                if(i % paddedRowSize >= rowSize){
-                    continue;
+            printf("height: %d, width: %d, paddedRowSize: %d, rowSize: %d", height, width, paddedRowSize, rowSize);
+            for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
+                for(int wIndex = 0; wIndex < paddedRowSize * pixelsPerByte; wIndex++){
+                    if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
+                        continue;
+                    }
+                    pixelData[hIndex * width + wIndex] = 
+                    colorTable[(data[((height - hIndex) * (paddedRowSize * pixelsPerByte) + wIndex) / pixelsPerByte] >> (7 - wIndex % pixelsPerByte)) & 0b1];
                 }
-                for(int j = 0; j < 8; j++){
-                    pixelData[ii * 8 + j] = colorTable[(data[i] >> (7 - j)) & 0b1];
-                }
-                ii++;
             }
             break;
         }
         case 4:
+            for(int colorTableIndex = 0; colorTableIndex < colorTableSize; colorTableIndex++){
+                colorTable[colorTableIndex] = colorTableBitpack(raw, COLORTABLEOFFSET + colorTableIndex * sizeof(uint32_t));
+            }
+            for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
+                for(int wIndex = 0; wIndex < paddedRowSize * pixelsPerByte; wIndex++){
+                    if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
+                        continue;
+                    }
+                    pixelData[hIndex * width + wIndex] = 
+                    colorTable[(data[((height - hIndex) * (paddedRowSize * pixelsPerByte) + wIndex) / pixelsPerByte] >> ((wIndex % pixelsPerByte) * 4)) & 0b1111];
+                    ii++;
+                }
+            }            
             break;
 
         case 8:
@@ -145,3 +161,4 @@ void displayLoop(uint32_t *pixelData, SDL_Window *window, SDL_Renderer *renderer
         SDL_RenderPresent(renderer);
     }
 }
+
