@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "define.h" //for opacity
 
 uint32_t bitpack32(uint8_t *raw, int offset){
     return (uint32_t) raw[offset] | raw[offset + 1] << 8 | raw[offset + 2] << 16 | raw[offset + 3] << 24;
@@ -14,11 +15,10 @@ uint32_t colorTableBitpack(uint8_t *raw, int offset){
 
 //extracts colors values from 16 bitPerPixel images
 uint32_t byte2Packer(uint8_t *raw){
-    int opacity = 0xff;
     uint16_t colorValue = raw[0] | raw[1];
     uint8_t blue = ((raw[1] & 0b01111100) << 3) | (((raw[1]) & 0b01110000) >> 4);
     uint8_t green = ((colorValue & 0b1111100000)  >> 2) | ((colorValue & 0b1110000000) >> 7);
     uint8_t red = ((raw[0] & 0b00011111) << 3) | (((raw[0]) & 0b00011100) >> 2);
 
-    return opacity | red << 8 | green << 16 | blue << 24;
+    return OPACITY | red << 8 | green << 16 | blue << 24;
 }

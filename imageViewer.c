@@ -110,7 +110,7 @@ int main(int argc, char **argv){
             printf("colorTable[0]: %x\ncolorTable[1]: %x\n", colorTable[0], colorTable[1]);
             printf("height: %d, width: %d, paddedRowSize: %d, rowSize: %d", height, width, paddedRowSize, rowSize);
             #endif
-            
+
             for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
                 for(int wIndex = 0; wIndex < paddedRowSize * pixelsPerByte; wIndex++){
                     if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
@@ -173,7 +173,7 @@ int main(int argc, char **argv){
                         continue;
                     }
                     uint8_t *p = &data[((height - hIndex) * (paddedRowSize / bytesPerPixel) + wIndex)];
-                    uint32_t pixelColor = 0xFF | p[0] << 8 | p[1] << 16 | p[2] << 24;
+                    uint32_t pixelColor = OPACITY | p[0] << 8 | p[1] << 16 | p[2] << 24;
                     pixelData[hIndex * width + wIndex] = pixelColor;
                 }
             }
