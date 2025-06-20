@@ -1,8 +1,8 @@
 CC = gcc
 LINKERFLAGS = `sdl2-config --cflags --libs`
-CFLAGS = -Wall -lm
+CFLAGS = -Wall
 all: imageViewer.o bitpack.o display.o
-	$(CC) display.o bitpack.o imageViewer.o -o main $(LINKERFLAGS)
+	$(CC) display.o bitpack.o imageViewer.o -o main $(LINKERFLAGS) -lm
 
 imageViewer.o: imageViewer.c
 	gcc -c imageViewer.c $(CFLAGS) -o imageViewer.o
