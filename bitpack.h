@@ -5,5 +5,6 @@
 uint32_t bitpack32(uint8_t *raw, int offset);
 uint16_t bitpack16(uint8_t *raw, int offset);
 uint32_t colorTableBitpack(uint8_t *raw, int offset);
+uint32_t byte2Packer(uint8_t *raw);
 
 #endif

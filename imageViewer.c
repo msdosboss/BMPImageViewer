@@ -148,9 +148,17 @@ int main(int argc, char **argv){
                 }
             }
             break;
-
-        case 16:
-            
+        case 16: //copy-pasted from 8 bit case - change.
+            int bytesPerPixel = 2;
+            for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
+                for(int wIndex = 0; wIndex < paddedRowSize / bytesPerPixel; wIndex++){
+                    if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
+                        continue;
+                    }
+                    uint32_t pixelColor = byte2Packer(&data[((height - hIndex) * (paddedRowSize / bytesPerPixel) + wIndex)]);
+                    pixelData[hIndex * width + wIndex] = pixelColor;
+                }
+            }
             break;
 
         case 24:
