@@ -148,7 +148,7 @@ int main(int argc, char **argv){
                 }
             }
             break;
-        case 16: //copy-pasted from 8 bit case - change.
+        case 16:
             int bytesPerPixel = 2;
             for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
                 for(int wIndex = 0; wIndex < paddedRowSize / bytesPerPixel; wIndex++){
