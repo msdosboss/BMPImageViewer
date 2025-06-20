@@ -106,8 +106,11 @@ int main(int argc, char **argv){
             colorTable[0] = colorTableBitpack(raw, COLORTABLEOFFSET);
             colorTable[1] = colorTableBitpack(raw, COLORTABLEOFFSET + sizeof(uint32_t));
 
+            #if defined DEBUG
             printf("colorTable[0]: %x\ncolorTable[1]: %x\n", colorTable[0], colorTable[1]);
             printf("height: %d, width: %d, paddedRowSize: %d, rowSize: %d", height, width, paddedRowSize, rowSize);
+            #endif
+            
             for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
                 for(int wIndex = 0; wIndex < paddedRowSize * pixelsPerByte; wIndex++){
                     if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
