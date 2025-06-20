@@ -37,7 +37,7 @@ int main(int argc, char **argv){
     if(fp == NULL) return -69;
 
 	fseek(fp, 0, SEEK_END);
-	long size = ftell(fp);
+	size_t size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
 	uint8_t *raw = malloc(sizeof(uint8_t) * size);
