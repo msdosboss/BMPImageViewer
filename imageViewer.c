@@ -119,7 +119,7 @@ int main(int argc, char **argv){
             }
             break;
         }
-        case 4:
+        case 4:{
             for(int colorTableIndex = 0; colorTableIndex < colorTableSize; colorTableIndex++){
                 colorTable[colorTableIndex] = colorTableBitpack(raw, COLORTABLEOFFSET + colorTableIndex * sizeof(uint32_t));
             }
@@ -133,8 +133,8 @@ int main(int argc, char **argv){
                 }
             }            
             break;
-
-        case 8:
+        }
+        case 8:{
             for(int colorTableIndex = 0; colorTableIndex < colorTableSize; colorTableIndex++){
                 colorTable[colorTableIndex] = colorTableBitpack(raw, COLORTABLEOFFSET + colorTableIndex * sizeof(uint32_t));
             }
@@ -148,7 +148,8 @@ int main(int argc, char **argv){
                 }
             }
             break;
-        case 16:
+        }
+        case 16:{
             int bytesPerPixel = 2;
             for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
                 for(int wIndex = 0; wIndex < paddedRowSize / bytesPerPixel; wIndex++){
@@ -160,9 +161,21 @@ int main(int argc, char **argv){
                 }
             }
             break;
-
-        case 24:
+        }
+        case 24:{
+            int bytesPerPixel = 3;
+            for(int hIndex = height - 1 ; hIndex >= 0; hIndex--){
+                for(int wIndex = 0; wIndex < paddedRowSize / bytesPerPixel; wIndex++){
+                    if(wIndex / pixelsPerByte >= rowSize){//skip  the padded data (hopefully)
+                        continue;
+                    }
+                    uint8_t *p = &data[((height - hIndex) * (paddedRowSize / bytesPerPixel) + wIndex)];
+                    uint32_t pixelColor = 0xFF | p[0] << 8 | p[1] << 16 | p[2] << 24;
+                    pixelData[hIndex * width + wIndex] = pixelColor;
+                }
+            }
             break;
+        }
     }
 
     displayLoop(pixelData, window, renderer);
